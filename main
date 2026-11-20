@@ -39,3 +39,51 @@ def get_promos_from_url(url: str) -> list[str]:
     except requests.exceptions.RequestException as e:
         print(f"Ошибка сети: {e}")
         return []
+
+def main():
+    """Главное меню программы."""
+    while True:
+        print("\n--- ПОИСК ПРОМОКОДОВ ---")
+        print("1. Ввести текст вручную")
+        print("2. Загрузить из файла (.txt или .html)")
+        print("3. Найти на веб-странице (по URL)")
+        print("0. Выход")
+        
+        choice = input("Выберите действие: ")
+        
+        if choice == "1":
+            print("Введите текст (нажмите Enter дважды для завершения):")
+            lines = []
+            while True:
+                line = input()
+                if line == "":
+                    break
+                lines.append(line)
+            text = "\n".join(lines)
+            show_result(find_promo_codes(text))
+
+        elif choice == "2":
+            filepath = input("Имя файла: ")
+            show_result(get_promos_from_file(filepath))
+
+        elif choice == "3":
+            url = input("Введите URL (например, https://site.ru): ")
+            show_result(get_promos_from_url(url))
+
+        elif choice == "0":
+            print("До свидания!")
+            break
+        else:
+            print("Неверная команда.")
+
+def show_result(promos: list[str]):
+    """Красивый вывод результатов."""
+    if not promos:
+        print("Промокоды не найдены.")
+    else:
+        print(f"Найдено промокодов: {len(promos)}")
+        for i, promo in enumerate(promos, 1):
+            print(f"  {i}. {promo}")
+
+if __name__ == "__main__":
+    main()
