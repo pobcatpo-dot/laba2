@@ -1,4 +1,5 @@
 import re
+import requests
 
 def find_promo_codes(text: str) -> list[str]:
     """
@@ -14,3 +15,27 @@ def find_promo_codes(text: str) -> list[str]:
     
     # Возвращаем уникальные коды 
     return list(dict.fromkeys(matches))
+
+def get_promos_from_file(filepath: str) -> list[str]:
+    """Читает текст из файла и ищет промокоды."""
+    try:
+        with open(filepath, "r", encoding="utf-8") as file:
+            text = file.read()
+        return find_promo_codes(text)
+    except FileNotFoundError:
+        print(f"Ошибка: Файл {filepath} не найден.")
+        return []
+    except Exception as e:
+        print(f"Ошибка при чтении файла: {e}")
+        return []
+
+def get_promos_from_url(url: str) -> list[str]:
+    """Скачивает страницу по URL и ищет промокоды в её тексте."""
+    try:
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        return find_promo_codes(response.text)
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка сети: {e}")
+        return []
